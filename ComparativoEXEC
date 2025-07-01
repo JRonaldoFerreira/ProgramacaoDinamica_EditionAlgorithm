@@ -1,10 +1,13 @@
 """
-Experimento de comparação entre:
-  • edit_distance_memo   – implementação top-down recursiva com memoização
-  • edit_distance_bottom_up – implementação bottom-up iterativa
+Comparação experimental de dois algoritmos de distância de edição (edit-distance):
+  • edit_distance_memo       – abordagem top-down (recursiva) com memoização
+  • edit_distance_bottom_up  – abordagem bottom-up (iterativa)
 
-Requisitos:
-  pip install matplotlib
+Conforme o enunciado:
+  • 10 ≤ n ≤ 10 000
+  • 100 ≤ k ≤ 200   (nº de tamanhos de entrada distintos, igualmente espaçados)
+  • 10 ≤ m ≤ 20     (nº de instâncias por tamanho, mesmo para todos os n)
+  • As mesmas instâncias são usadas para os dois algoritmos.
 """
 
 import random
@@ -19,29 +22,25 @@ import matplotlib.pyplot as plt
 # ---------------------------------------------------------------------------
 def edit_distance_memo(x: str, y: str) -> int:
     m, n = len(x), len(y)
-
-    # tabela de memoização: (m+1) × (n+1)
     ed = [[-1] * (n + 1) for _ in range(m + 1)]
 
-    # casos-base (primeira linha e primeira coluna)
     for i in range(m + 1):
         ed[i][0] = i
     for j in range(n + 1):
         ed[0][j] = j
 
-    # aumenta o limite de recursão para evitar erro em n grandes
-    sys.setrecursionlimit(max(10_000, 2 * (m + n)))
+    # garante profundidade de pilha suficiente
+    sys.setrecursionlimit(max(50_000, 2 * (m + n)))
 
-    # função recursiva interna
     def rec(i: int, j: int) -> int:
         if ed[i][j] >= 0:
             return ed[i][j]
 
         cost = 0 if x[i - 1] == y[j - 1] else 1
         ed[i][j] = min(
-            rec(i - 1, j - 1) + cost,  # diagonal (match/substituição)
-            rec(i - 1, j) + 1,         # cima    (remoção)
-            rec(i, j - 1) + 1          # esquerda(inserção)
+            rec(i - 1, j - 1) + cost,  # diagonal (match / substituição)
+            rec(i - 1, j) + 1,         # cima     (remoção)
+            rec(i, j - 1) + 1          # esquerda (inserção)
         )
         return ed[i][j]
 
@@ -53,81 +52,79 @@ def edit_distance_memo(x: str, y: str) -> int:
 # ---------------------------------------------------------------------------
 def edit_distance_bottom_up(x: str, y: str) -> int:
     m, n = len(x), len(y)
-
-    # matriz (m+1) × (n+1)
     ed = [[0] * (n + 1) for _ in range(m + 1)]
 
-    # inicialização das bordas
     for i in range(m + 1):
         ed[i][0] = i
     for j in range(n + 1):
         ed[0][j] = j
 
-    # preenchimento da tabela
     for i in range(1, m + 1):
-        xi = x[i - 1]          # evita x[i-1] a cada iteração interna
-        row_i = ed[i]          # linha atual
-        row_prev = ed[i - 1]   # linha de cima
+        xi = x[i - 1]
+        row_i   = ed[i]
+        row_prev = ed[i - 1]
         for j in range(1, n + 1):
             cost = 0 if xi == y[j - 1] else 1
             diag = row_prev[j - 1] + cost
             up   = row_prev[j] + 1
             left = row_i[j - 1] + 1
-            # atribui o mínimo das três possibilidades
             row_i[j] = diag if diag <= up and diag <= left else (left if left <= up else up)
 
     return ed[m][n]
 
 
 # ---------------------------------------------------------------------------
-# 3) Parâmetros do experimento (ajuste-os à vontade)
+# 3) Parâmetros exatamente como no enunciado
 # ---------------------------------------------------------------------------
-MIN_N, MAX_N = 10, 300          # intervalo de tamanhos das strings
-K_RANGE       = (30, 50)        # nº de tamanhos distintos (reduzido p/ rodar rápido on-line)
-M_RANGE       = (5, 8)          # nº de instâncias por tamanho (idem)
-ALPHABET      = string.ascii_lowercase
+MIN_N, MAX_N = 10, 10_000          # intervalo de tamanhos das strings
+K_RANGE      = (100, 200)          # nº de tamanhos distintos
+M_RANGE      = (10, 20)            # nº de instâncias por tamanho
+ALPHABET     = string.ascii_lowercase
 
 
 def main() -> None:
-    random.seed(1)
+    random.seed(42)                # reprodutibilidade
 
-    # define k e m de forma aleatória dentro dos intervalos
-    k = random.randint(*K_RANGE)
-    m = random.randint(*M_RANGE)
+    k = random.randint(*K_RANGE)   # sorteia k
+    m = random.randint(*M_RANGE)   # sorteia m  (mesmo para todos os n)
 
     # tamanhos igualmente espaçados
     step = (MAX_N - MIN_N) / (k - 1)
     sizes = [int(MIN_N + i * step) for i in range(k)]
 
-    time_memo   = []
-    time_bottom = []
+    time_memo, time_bottom = [], []
 
     for n in sizes:
-        total_memo   = 0.0
-        total_bottom = 0.0
+        total_memo, total_bottom = 0.0, 0.0
 
-        for _ in range(m):
-            s1 = ''.join(random.choices(ALPHABET, k=n))
-            s2 = ''.join(random.choices(ALPHABET, k=n))
+        # gera *uma única* lista de pares (s1, s2) para este n
+        instances = [
+            (
+                ''.join(random.choices(ALPHABET, k=n)),
+                ''.join(random.choices(ALPHABET, k=n))
+            )
+            for _ in range(m)
+        ]
 
-            # --- top-down ---
+        # executa os dois algoritmos sobre as MESMAS instâncias
+        for s1, s2 in instances:
             start = time.perf_counter()
             d1 = edit_distance_memo(s1, s2)
             total_memo += time.perf_counter() - start
 
-            # --- bottom-up ---
             start = time.perf_counter()
             d2 = edit_distance_bottom_up(s1, s2)
             total_bottom += time.perf_counter() - start
 
             # verificação de correção
-            assert d1 == d2, f"Distâncias diferentes em n={n}"
+            assert d1 == d2, f"Distâncias divergentes (n={n})"
 
         time_memo.append(total_memo / m)
         time_bottom.append(total_bottom / m)
+        print(f"n={n:5d}  OK  memo={time_memo[-1]:.3f}s  bottom={time_bottom[-1]:.3f}s")
 
     # -----------------------------------------------------------------------
-    # 4) Plotagem dos resultados
+    # 4) Plotagem
     # -----------------------------------------------------------------------
     plt.figure(figsize=(8, 5))
     plt.plot(sizes, time_memo,   label="Top-down memoização")
