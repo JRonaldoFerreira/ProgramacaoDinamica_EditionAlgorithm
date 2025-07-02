@@ -30,7 +30,7 @@ def Edit_rec(x, y , i, j, ed):
         return ed[i][j]
 
 
-
+#Exemplo de uso
 
 s1 = ["S","L","O","W","L","Y", "B"]
 s2 = ["K","L","O","W","K","Y", "A"]
