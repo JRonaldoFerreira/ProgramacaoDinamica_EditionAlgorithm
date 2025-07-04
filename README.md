@@ -95,8 +95,3 @@ CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. *Introduction to Al
 LEVENSHTEIN, V. I. Binary codes capable of correcting deletions, insertions and reversals. *Soviet Physics Doklady*, 10 (8): 707‑710, 1966.  
 WAGNER, R. A.; FISCHER, M. J. The string‑to‑string correction problem. *Journal of the ACM*, 21 (1): 168‑173, 1974.  
 MYERS, G. A. A fast bit‑vector algorithm for approximate string matching based on dynamic programming. *Journal of the ACM*, 46 (3): 395‑415, 1999.
-
----
-
-### Apêndice A – Listagens de código
-<Inserir aqui as Listagens 1 e 2 completas em blocos de código ou fornecer como arquivos suplementares.>
