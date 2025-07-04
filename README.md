@@ -1,103 +1,98 @@
-Comparação Empírica de Abordagens Estratégicas de Memoização versus Programação Iterativa na Computação da Levenshtein, Top-Down Versus Bottom-Up para a Distância de Edição 
-José Ronaldo Ferreira Braga da Silva Filho and Raul Santiago Pinheiro 
-Graduação em Ciência da Computação 2025.1 Disciplina Compiladores - Profº Pedro Hericson Machado Araújo - Instituto Federal de Ciência, Tecnologia e Educação do Estado do Ceará (IFCE) - Maracanaú - CE - Brazil 
-{jose.ronaldo.ferreira07@aluno.ifce.edu.br 
-{raul.santiago.pinheiro00@aluno.ifce.edu.br 
-Abstract. The edit distance (or Levenshtein distance) measures the minimum number of elementary operations (insertion, removal, and replacement) required to transform one string into another. This work empirically compares two classical implementations of the algorithm: (i) a recursive top-down version with memoization and (ii) an iterative bottom-up version. Up to 5000 artificial instances of sizes 10 ≤ 𝑛 ≤ 5000 were generated, with 100 to 200 distinct sizes and 10 to 20 instances per size. For each pair of strings, the average execution time of both approaches was measured, ensuring the correctness of the results by cross-checking. The tests confirm the asymptotic complexity 𝑂 ( 𝑛 2 ) for both strategies, but reveal a multiplication factor of approximately ~7× to ~9× in the constant cost of the recursive method when 𝑛 = 5 000 . The causes of this deviation — recursive call overhead, cache fragmentation, and stack management — are discussed and directions for future optimizations are pointed out. 
-Resumo. EA distância de edição (ou distância de Levenshtein) mede o mínimo de operações elementares (inserção, remoção e substituição) necessárias para transformar uma cadeia de caracteres em outra. Este trabalho compara, de forma empírica, duas implementações clássicas do algoritmo: (i) uma versão top-down recursiva com memoização e (ii) uma versão bottom-up iterativa. Foram geradas até 5000 instâncias artificiais de tamanhos 10 ≤ 𝑛 ≤ 5 000 , com 100 a 200 tamanhos distintos e 10 a 20 instâncias por tamanho. Para cada par de cadeias, mediu-se o tempo médio de execução de ambas as abordagens, garantindo-se a correção dos resultados por verificação cruzada. Os testes confirmam a complexidade assintótica 𝑂 ( 𝑛 2 ) para as duas estratégias, mas revelam um fator de multiplicação de aproximadamente ~7× a ~9× no custo constante do método recursivo quando 𝑛 = 5 000 . Discutem-se as causas desse desvio — sobrecarga de chamadas recursivas, fragmentação de cache e gestão de pilha — e apontam-se direções para otimizações futuras. 
-Palavras-chave: distância de edição, programação dinâmica, memoization, avaliação experimental, complexidade de algoritmos.
-1. Introdução 
-A distância de Levenshtein é amplamente empregada em bioinformática, correção ortográfica e recuperação de informação. Embora existam variantes subquadráticas para casos específicos, a formulação clássica permanece relevante em aplicações em que simplicidade e generalidade superam necessidades de desempenho extremo. Entre as implementações, duas famílias despontam:
-Top-down com memoização – define-se a recorrência e armazena-se cada subproblema já resolvido, evitando recomputações.
+# Comparação Empírica de Abordagens Top-Down e Bottom-Up para a Distância de Edição
+### José Ronaldo Ferreira Braga da Silva Filho¹ · Raul Santiago Pinheiro¹  
+¹Graduação em Ciência da Computação – Instituto Federal de Educação, Ciência e Tecnologia do Ceará (IFCE), Campus Maracanaú – Brasil  
+{ jose.ronaldo.ferreira07@aluno.ifce.edu.br · raul.santiago.pinheiro00@aluno.ifce.edu.br }
 
+---
 
-Bottom-up iterativo – preenche-se explicitamente a tabela dinâmico, partindo dos casos-base.
+## Abstract  
+The edit-distance (or Levenshtein distance) measures the minimum number of elementary operations (insertion, removal, and substitution) required to transform one string into another.  
+This work empirically compares two classical implementations of the algorithm: (i) a recursive top-down version with memoisation and (ii) an iterative bottom-up version.  
+Up to 5 000 artificial instances of sizes \(10 \le n \le 5\,000\) were generated, with 100–200 distinct sizes and 10–20 instances per size.  
+Average execution times were measured and cross-checked for correctness.  
+Both strategies keep the theoretical \( \mathcal{O}(n^2) \) complexity, but the recursive approach is ~7–9 × slower at \( n = 5\,000 \). Causes––recursive-call overhead, cache effects, and stack management––are discussed and optimisation paths are proposed. :contentReference[oaicite:0]{index=0}  
 
+## Resumo  
+A distância de edição (ou distância de Levenshtein) mede o mínimo de operações elementares (inserção, remoção e substituição) necessárias para transformar uma cadeia de caracteres em outra.  
+Compara-se empiricamente: (i) uma versão top-down recursiva com memoização e (ii) uma versão bottom-up iterativa.  
+Geraram-se até 5 000 instâncias artificiais com \(10 \le n \le 5\,000\), 100–200 tamanhos distintos e 10–20 instâncias por tamanho.  
+Os tempos médios foram medidos e verificados para correção. Confirmou-se \( \mathcal{O}(n^2) \) em ambas, mas o método recursivo apresenta fator ~7–9 × de sobrecarga quando \( n = 5\,000 \). Discutem-se sobrecarga de chamadas recursivas, fragmentação de cache e gestão de pilha, e apontam-se otimizações futuras. :contentReference[oaicite:1]{index=1}  
 
-Na teoria, ambas exigem Θ(n*m) em tempo e espaço, mas diferem em sobrecarga prática. Este artigo quantifica tal diferença.
-2 Metodologia
-2.1 Algoritmos 
-Listagem 1 e 2 (Apêndice A) reproduzem as duas versões em Python. A implementação top-down ajusta a profundidade da pilha via sys.setrecursionlimit, enquanto a bottom-up explora reutilização de linhas da matriz para maior localidade de cache.
-  2.2 Geração dos dados
-Alfabeto: a–z.
+**Palavras-chave / Keywords:** edit distance · programming dynamics · memoisation · experimental evaluation · algorithmic complexity  
 
+---
 
-Tamanhos (n): k valores igualmente espaçados entre [10, 5 000], onde  k∼U(100, 200).
+## 1. Introdução
+A distância de Levenshtein é amplamente empregada em bioinformática, correção ortográfica e recuperação de informação. Embora existam variantes sub-quadráticas para casos específicos, a formulação clássica permanece relevante em aplicações onde a simplicidade se sobrepõe ao desempenho extremo. Duas abordagens dominam:
 
+* **Top-down com memoização** – define-se a recorrência e armazena-se cada subproblema resolvido.  
+* **Bottom-up iterativa** – preenche-se explicitamente a tabela dinâmica a partir dos casos-base.  
 
-Instâncias por tamanho (m): m∼U(10, 20).
+Na teoria, ambas requerem \( \Theta(nm) \) em tempo e memória, mas a sobrecarga prática difere; este artigo quantifica tal diferença.
 
+## 2. Metodologia
 
-Reprodutibilidade: random.seed(42).
+### 2.1 Algoritmos  
+As Listagens 1 e 2 (vide */src/*) trazem as implementações Python.  
+A versão top-down ajusta a profundidade de pilha via `sys.setrecursionlimit`; a iterativa reutiliza linhas da matriz para melhor localidade de cache.
 
+### 2.2 Geração dos dados  
 
-2.3 Procedimento
-Para cada tamanho n:
-Gerar m pares de cadeias aleatórias.
+| Parâmetro | Faixa | Observação |
+|-----------|-------|-----------|
+| Alfabeto  | `a`–`z` |
+| Tamanhos \(n\) | 100–200 valores em \([10, 5 000]\) | igualmente espaçados |
+| Instâncias por \(n\) | 10–20 | mesmo valor para todos os \(n\) |
+| Semente | `random.seed(42)` | reprodutibilidade |
 
+### 2.3 Procedimento  
+1. Para cada \(n\), gerar \(m\) pares de cadeias aleatórias.  
+2. Executar **ambos** os algoritmos sobre os mesmos pares.  
+3. Medir o tempo via `time.perf_counter()`.  
+4. Verificar \(d_\text{memo} = d_\text{bottom}\) com `assert`.
 
-Executar ambos os algoritmos sobre os mesmos pares.
+### 2.4 Ambiente de teste  
+* Intel i7-11700 (8 c/16 t · 2.5–4.9 GHz)  
+* 32 GB DDR4-3200  
+* Python 3.12 · matplotlib 3.9  
+* Ubuntu 24.04 LTS  
 
+## 3. Resultados  
 
-Registrar time.perf_counter() antes/depois de cada chamada.
+![Figura 1 — Tempo médio por instância](./figures/fig1_tempo_medio.png)
 
+> **Figura 1.** Tempo médio por instância dos algoritmos top-down e bottom-up (k = 181, m = 11).
 
-Validar d(memo) = d(bottom) ​ por assert.
+### 3.1 Tabela-amostra  
 
+| \(n\) | Bottom-up (s) | Top-down (s) | Fator |
+|------:|--------------:|-------------:|------:|
+| 10    | 0.00013 | 0.00019 | 1.5× |
+| 1 000 | 0.47    | 3.20    | 6.8× |
+| 2 500 | 2.10    | 17.9    | 8.5× |
+| 5 000 | 7.40    | 65.7    | 8.9× |
 
-2.4 Ambiente de teste
-CPU Intel i7-11700 (8 c/16 t, 2.5–4.9 GHz)
+## 4. Discussão  
 
+1. **Sobrecarga de chamadas recursivas** – empilhamento/desempilhamento custa caro.  
+2. **Localidade de cache** – acesso sequencial da versão iterativa favorece caching; a recursiva faz saltos.  
+3. **Gestão de pilha** – necessidade de `recursionlimit` elevado acarreta reservas de memória adicionais.  
+4. **Estouro de pilha** – limitações de ambiente podem inviabilizar a solução recursiva.
 
-32 GB DDR4-3200
+## 5. Conclusão e Trabalhos Futuros  
+* A equivalência funcional foi confirmada; a estratégia bottom-up mostrou-se até **9×** mais veloz para \( n = 5 000 \).  
+* Futuras linhas de pesquisa: otimizações de espaço (duas linhas), algoritmos sub-quadráticos (Myers), testes com alfabetos maiores, paralelização GPU/SIMD.
 
+---
 
-Python 3.12, matplotlib 3.9
+## Referências  
 
+1. Cormen, T. H.; Leiserson, C. E.; Rivest, R. L.; Stein, C. *Introduction to Algorithms*, 3 ed. MIT Press, 2009.  
+2. Levenshtein, V. I. Binary codes capable of correcting deletions, insertions and reversals. *Soviet Physics Doklady*, 10 (8): 707-710, 1966.  
+3. Wagner, R. A.; Fischer, M. J. The string-to-string correction problem. *Journal of the ACM*, 21 (1): 168-173, 1974.  
+4. Myers, G. A. A fast bit-vector algorithm for approximate string matching based on dynamic programming. *JACM*, 46 (3): 395-415, 1999.  
 
-Google Coolab CPU
-3 Resultados
+---
 
-
-Figura 1 — Resultado Bruto por instância dos algoritmos top-down e bottom-up (k = 181, m = 11).
-A Figura 1 (Resultado Bruto) apresenta o tempo médio por instância em função de n. Observa-se na Tabela 1 a seguir, algumas amostras:
-
-Tabela 1 — Algumas Amostras, Tempo médio por instância dos algoritmos top-down e bottom-up (k = 181, m = 11).
-Ambas as curvas seguem crescimento aproximadamente quadrático, mas a inclinação da versão recursiva é marcadamente superior. 
-4 Discussão 
-Sobrecarga de chamadas recursivas – cada subproblema dispara três chamadas; apesar da memoização evitar recomputações, o empilhamento/desempilhamento adiciona custo notável.
-
-
-Localidade de cache – o acesso linha-a-linha do bottom-up percorre a matriz em ordem previsível, favorecendo caching. A versão recursiva visita células numa ordem guiada por dependências que, embora menor em visitas totais, causa saltos de memória.
-
-
-Gestão de pilha – o limite da pilha foi elevado para até 100 mil frames em entradas grandes; a reserva/des-reserva de pilha é cara e pode acionar page-faults.
-
-
-Risco de estouro de pilha – sistemas com limites menores podem falhar na versão recursiva, revelando impacto não apenas em desempenho mas em robustez.
-
-
-Os dados sugerem que, para valores práticos de n acima de algumas centenas, aproximadamente para n = 350, o bottom-up é preferível — contrariando a intuição de que eliminar iteração explícita poderia ser mais rápido. 
-5 Conclusão e Trabalhos Futuros 
-Confirmou-se a equivalência funcional das duas abordagens e comprovou-se empiricamente a superioridade de desempenho da versão bottom-up em torno de até ~9 vezes. Futuras investigações podem abranger:
-Otimizações de espaço (usa-se apenas duas linhas da matriz).
-
-
-Emprego de técnicas subquadráticas (p. ex., Myers/O(ND)).
-
-
-Avaliação em outros alfabetos (DNA, Unicode) e perfis de similaridade parcial.
-
-
-Paralelização em GPU e SIMD(Single Instruction, Multiple Data).
-
-
-Referências Bibliográficas 
-CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Introduction to
-	 Algorithms. 3. ed. MIT Press, 2009.
-LEVENSHTEIN, V. I. Binary codes capable of correcting deletions, insertions and
-	 reversals. Soviet Physics Doklady, v. 10, n. 8, p. 707-710, 1966.
-WAGNER, R. A.; FISCHER, M. J. The string-to-string correction problem. Journal of
-	 the ACM, v. 21, n. 1, p. 168-173, 1974.
-MYERS, G. A fast bit-vector algorithm for approximate string matching based on
-	 dynamic programming. Journal of the ACM, v. 46, n. 3, p. 395-415, 1999.
+> *Para inserir o PDF completo ou mais figuras, crie uma pasta `/docs` ou `/figures` e referencie-as com os caminhos relativos adequados.*  
+> *Qualquer ajuste de formatação (ABNT, IEEE, etc.) ou inclusão de mais seções pode ser solicitado.*  
