@@ -61,8 +61,8 @@ Para cada tamanho *n*:
 ## 3  Resultados
 
 ![Figura 1 — Resultado Bruto por instância dos algoritmos top‑down e bottom‑up (*k* = 181, *m* = 11).](figura1.png)
-
 ![Tabela 1 — Algumas Amostras do tempo médio por algoritmos top‑down e bottom‑up (*k* = 181, *m* = 11).](tabela1.png)
+
 
 Ambas as curvas seguem crescimento aproximadamente quadrático, mas a inclinação da versão recursiva é marcadamente superior.
 
