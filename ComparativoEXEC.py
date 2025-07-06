@@ -12,83 +12,13 @@ import random
 import string
 import time
 import matplotlib.pyplot as plt
-import sys                  # 1) importe sys
-
+import sys 
+from ProgramacaoDinamica_EditionAlgorithm.recursive import Edit_memoi               # 1) importe sys
+from ProgramacaoDinamica_EditionAlgorithm.interativo import edit_distance_pd
 # Ajuste a profundidade do limite de recursão
 
 sys.setrecursionlimit(2 * 10_000 + 50)
 
-# Distância de Edição com Memoização --------------------------------------------------------------
-
-#Criação da tabela para memoização
-
-def Edit_memoi(x,y, m, n, ed):
-    for i in range(0, m+1):
-        ed[i][0] = i 
-    for j in range(0, n+1):
-        ed[0][j] = j
-    
-    for i in range(1, m+1):
-        for j in range(1, n+1):
-            ed[i][j] = - 1
-    return Edit_rec(x,y,i,j, ed)
-
-#Coração do algoritmo recursivo para o problema da edição 
-
-def Edit_rec(x, y , i, j, ed):
-    if ed[i][j] >= 0:
-        return ed[i][j]
-    else:
-        if x[i-1] == y[j-1]:
-            a = Edit_rec(x,y,i-1,j-1,ed) + 0
-        else:
-            a = Edit_rec(x,y,i-1,j-1,ed) + 1
-
-        b = Edit_rec(x,y,i,j-1,ed) + 1
-        c = Edit_rec(x,y,i-1,j,ed) + 1
-        ed[i][j] = min(a,b,c)
-        
-        return ed[i][j]
-
-# Distância de Edição Iterativo --------------------------------------------------------------
-
-def edit_distance_pd(x, y):
-    m, n = len(x), len(y)
-
-    # Criação das matrizes
-    ed = [[-1 for _ in range(n + 1)] for _ in range(m + 1)]
-    R = [['' for _ in range(n + 1)] for _ in range(m + 1)]
-
-    # Inicialização da primeira coluna (remoções)
-    for i in range(m + 1):
-        ed[i][0] = i
-        R[i][0] = '↑'
-
-    # Inicialização da primeira linha (inserções)
-    for j in range(n + 1):
-        ed[0][j] = j
-        R[0][j] = '←'
-
-    # Preenchimento das tabelas
-    for i in range(1, m + 1):
-        for j in range(1, n + 1):
-            dif = 0 if x[i - 1] == y[j - 1] else 1
-
-            diag = ed[i - 1][j - 1] + dif
-            left = ed[i][j - 1] + 1
-            up = ed[i - 1][j] + 1
-
-            if diag <= min(left, up):
-                ed[i][j] = diag
-                R[i][j] = '↘'
-            elif left <= up:
-                ed[i][j] = left
-                R[i][j] = '←'
-            else:
-                ed[i][j] = up
-                R[i][j] = '↑'
-
-    return ed[m][n], R
 
 
 # --------------------------------------------------------------
