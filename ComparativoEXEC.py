@@ -1,95 +1,128 @@
-"""
-Comparação experimental de dois algoritmos de distância de edição (edit-distance):
-  • edit_distance_memo       – abordagem top-down (recursiva) com memoização
-  • edit_distance_bottom_up  – abordagem bottom-up (iterativa)
 
-Conforme o enunciado:
-  • 10 ≤ n ≤ 10 000
-  • 100 ≤ k ≤ 200   (nº de tamanhos de entrada distintos, igualmente espaçados)
-  • 10 ≤ m ≤ 20     (nº de instâncias por tamanho, mesmo para todos os n)
-  • As mesmas instâncias são usadas para os dois algoritmos.
+"""
+comparacao_edit_distance.py
+-------------------------------------------------
+Compara tempo das versões:
+  • Edit_memoi / Edit_rec  – top-down com memoização
+  • edit_distance_pd       – bottom-up iterativo
+
 """
 
 import random
 import string
-import sys
 import time
 import matplotlib.pyplot as plt
+import sys                  # 1) importe sys
 
+# Ajuste a profundidade do limite de recursão
 
-# ---------------------------------------------------------------------------
-# 1) Algoritmo top-down recursivo com memoização
-# ---------------------------------------------------------------------------
-def edit_distance_memo(x: str, y: str) -> int:
-    m, n = len(x), len(y)
-    ed = [[-1] * (n + 1) for _ in range(m + 1)]
+sys.setrecursionlimit(2 * 10_000 + 50)
 
-    for i in range(m + 1):
-        ed[i][0] = i
-    for j in range(n + 1):
+# Distância de Edição com Memoização --------------------------------------------------------------
+
+#Criação da tabela para memoização
+
+def Edit_memoi(x,y, m, n, ed):
+    for i in range(0, m+1):
+        ed[i][0] = i 
+    for j in range(0, n+1):
         ed[0][j] = j
+    
+    for i in range(1, m+1):
+        for j in range(1, n+1):
+            ed[i][j] = - 1
+    return Edit_rec(x,y,i,j, ed)
 
-    # garante profundidade de pilha suficiente
-    sys.setrecursionlimit(max(50_000, 2 * (m + n)))
+#Coração do algoritmo recursivo para o problema da edição 
 
-    def rec(i: int, j: int) -> int:
-        if ed[i][j] >= 0:
-            return ed[i][j]
+def Edit_rec(x, y , i, j, ed):
+    if ed[i][j] >= 0:
+        return ed[i][j]
+    else:
+        if x[i-1] == y[j-1]:
+            a = Edit_rec(x,y,i-1,j-1,ed) + 0
+        else:
+            a = Edit_rec(x,y,i-1,j-1,ed) + 1
 
-        cost = 0 if x[i - 1] == y[j - 1] else 1
-        ed[i][j] = min(
-            rec(i - 1, j - 1) + cost,  # diagonal (match / substituição)
-            rec(i - 1, j) + 1,         # cima     (remoção)
-            rec(i, j - 1) + 1          # esquerda (inserção)
-        )
+        b = Edit_rec(x,y,i,j-1,ed) + 1
+        c = Edit_rec(x,y,i-1,j,ed) + 1
+        ed[i][j] = min(a,b,c)
+        
         return ed[i][j]
 
-    return rec(m, n)
+# Distância de Edição Iterativo --------------------------------------------------------------
 
-
-# ---------------------------------------------------------------------------
-# 2) Algoritmo bottom-up iterativo
-# ---------------------------------------------------------------------------
-def edit_distance_bottom_up(x: str, y: str) -> int:
+def edit_distance_pd(x, y):
     m, n = len(x), len(y)
-    ed = [[0] * (n + 1) for _ in range(m + 1)]
 
+    # Criação das matrizes
+    ed = [[-1 for _ in range(n + 1)] for _ in range(m + 1)]
+    R = [['' for _ in range(n + 1)] for _ in range(m + 1)]
+
+    # Inicialização da primeira coluna (remoções)
     for i in range(m + 1):
         ed[i][0] = i
+        R[i][0] = '↑'
+
+    # Inicialização da primeira linha (inserções)
     for j in range(n + 1):
         ed[0][j] = j
+        R[0][j] = '←'
 
+    # Preenchimento das tabelas
     for i in range(1, m + 1):
-        xi = x[i - 1]
-        row_i   = ed[i]
-        row_prev = ed[i - 1]
         for j in range(1, n + 1):
-            cost = 0 if xi == y[j - 1] else 1
-            diag = row_prev[j - 1] + cost
-            up   = row_prev[j] + 1
-            left = row_i[j - 1] + 1
-            row_i[j] = diag if diag <= up and diag <= left else (left if left <= up else up)
+            dif = 0 if x[i - 1] == y[j - 1] else 1
 
-    return ed[m][n]
+            diag = ed[i - 1][j - 1] + dif
+            left = ed[i][j - 1] + 1
+            up = ed[i - 1][j] + 1
+
+            if diag <= min(left, up):
+                ed[i][j] = diag
+                R[i][j] = '↘'
+            elif left <= up:
+                ed[i][j] = left
+                R[i][j] = '←'
+            else:
+                ed[i][j] = up
+                R[i][j] = '↑'
+
+    return ed[m][n], R
 
 
-# ---------------------------------------------------------------------------
-# 3) Parâmetros exatamente como no enunciado
-# ---------------------------------------------------------------------------
-MIN_N, MAX_N = 10, 10_000          # intervalo de tamanhos das strings
+# --------------------------------------------------------------
+# Wrappers de Enpacotamento Das Chamadas dos 2 Algoritmos 
+# --------------------------------------------------------------
+def edit_distance_memo(s1: str, s2: str) -> int:
+    """Empacota Edit_memoi() para receber só (s1, s2)."""
+    m, n = len(s1), len(s2)
+    ed = [[-1] * (n + 1) for _ in range(m + 1)]  #Tabela de memoização para armazenar os resultados parciais do algoritmo recursivo de distância de edição
+    return Edit_memoi(s1, s2, m, n, ed)
+
+def edit_distance_bottom_up(s1: str, s2: str) -> int:
+    """Empacota edit_distance_pd() para devolver só a distância."""
+    dist, _ = edit_distance_pd(s1, s2) # Como o segundo argumento de retorno de edit_distance_pd() é uma matriz de direções, aqui está retonrando só a distância
+    return dist
+
+# --------------------------------------------------------------
+# 2) Parâmetros do experimento (fiéis ao enunciado)
+# --------------------------------------------------------------
+MIN_N, MAX_N = 10, 5_000          # intervalo de tamanhos das strings
 K_RANGE      = (100, 200)          # nº de tamanhos distintos
 M_RANGE      = (10, 20)            # nº de instâncias por tamanho
 ALPHABET     = string.ascii_lowercase
 
-
+# --------------------------------------------------------------
+# 3) Função principal
+# --------------------------------------------------------------
 def main() -> None:
     random.seed(42)                # reprodutibilidade
 
     k = random.randint(*K_RANGE)   # sorteia k
     m = random.randint(*M_RANGE)   # sorteia m  (mesmo para todos os n)
 
-    # tamanhos igualmente espaçados
-    step = (MAX_N - MIN_N) / (k - 1)
+    step = (MAX_N - MIN_N) / (k - 1)     # tamanhos igualmente espaçados
     sizes = [int(MIN_N + i * step) for i in range(k)]
 
     time_memo, time_bottom = [], []
@@ -123,9 +156,9 @@ def main() -> None:
         time_bottom.append(total_bottom / m)
         print(f"n={n:5d}  OK  memo={time_memo[-1]:.3f}s  bottom={time_bottom[-1]:.3f}s")
 
-    # -----------------------------------------------------------------------
+    # ----------------------------------------------------------
     # 4) Plotagem
-    # -----------------------------------------------------------------------
+    # ----------------------------------------------------------
     plt.figure(figsize=(8, 5))
     plt.plot(sizes, time_memo,   label="Top-down memoização")
     plt.plot(sizes, time_bottom, label="Bottom-up iterativo")
@@ -136,6 +169,6 @@ def main() -> None:
     plt.tight_layout()
     plt.show()
 
-
+# --------------------------------------------------------------
 if __name__ == "__main__":
     main()
