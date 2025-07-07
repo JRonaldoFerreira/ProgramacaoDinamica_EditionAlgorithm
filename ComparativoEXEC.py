@@ -12,7 +12,11 @@ import string
 import time
 import matplotlib.pyplot as plt
 import sys 
+<<<<<<< HEAD
 from recursive import Edit_memoi               # 1) importe sys
+=======
+from recursive import Edit_memoi        
+>>>>>>> 81c95793674e3dc55a9e34f1a41237aa575a490d
 from interativo import Edit_distance_pd
 # Ajuste a profundidade do limite de recursão
 
