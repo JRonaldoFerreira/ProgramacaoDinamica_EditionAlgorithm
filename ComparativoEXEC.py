@@ -16,7 +16,7 @@ from recursive import Edit_memoi
 from interativo import Edit_distance_pd
 # Ajuste a profundidade do limite de recursão
 
-sys.setrecursionlimit(50000)
+sys.setrecursionlimit(2 * 10_000 + 50)
 
 
 # --------------------------------------------------------------
