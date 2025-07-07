@@ -1,4 +1,3 @@
-
 """
 comparacao_edit_distance.py
 -------------------------------------------------
@@ -13,14 +12,11 @@ import string
 import time
 import matplotlib.pyplot as plt
 import sys 
-from ProgramacaoDinamica_EditionAlgorithm.recursive import Edit_memoi
-from ProgramacaoDinamica_EditionAlgorithm.interativo import edit_distance_pd
-
-
+from recursive import Edit_memoi               # 1) importe sys
+from interativo import Edit_distance_pd
 # Ajuste a profundidade do limite de recursão
 
-sys.setrecursionlimit(2 * 10_000 + 50)
-
+sys.setrecursionlimit(20000)
 
 
 # --------------------------------------------------------------
@@ -34,13 +30,13 @@ def edit_distance_memo(s1: str, s2: str) -> int:
 
 def edit_distance_bottom_up(s1: str, s2: str) -> int:
     """Empacota edit_distance_pd() para devolver só a distância."""
-    dist, _ = edit_distance_pd(s1, s2) # Como o segundo argumento de retorno de edit_distance_pd() é uma matriz de direções, aqui está retonrando só a distância
+    dist, _ = Edit_distance_pd(s1, s2) # Como o segundo argumento de retorno de edit_distance_pd() é uma matriz de direções, aqui está retonrando só a distância
     return dist
 
 # --------------------------------------------------------------
 # 2) Parâmetros do experimento (fiéis ao enunciado)
 # --------------------------------------------------------------
-MIN_N, MAX_N = 10, 5_000          # intervalo de tamanhos das strings
+MIN_N, MAX_N = 10, 800          # intervalo de tamanhos das strings
 K_RANGE      = (100, 200)          # nº de tamanhos distintos
 M_RANGE      = (10, 20)            # nº de instâncias por tamanho
 ALPHABET     = string.ascii_lowercase
