@@ -1,6 +1,3 @@
-
-#Criação da tabela para memoização
-
 def Edit_memoi(x,y, m, n, ed):
     for i in range(0, m+1):
         ed[i][0] = i 
@@ -28,20 +25,3 @@ def Edit_rec(x, y , i, j, ed):
         ed[i][j] = min(a,b,c)
         
         return ed[i][j]
-
-
-#Exemplo de uso
-
-s1 = ["S","L","O","W","L","Y", "B"]
-s2 = ["K","L","O","W","K","Y", "A"]
-
-ed = []
-
-for i in range(0, len(s1)+1):
-    ed.append([])
-    for j in range(0, len(s2)+1):
-        ed[i].append(-1)
-
-
-a = Edit_memoi(s1,s2,len(s1), len(s2), ed)
-print(a)
