@@ -1,4 +1,4 @@
-# Análise Experimental de Estratégias para o Agoritmo de Distância de Ediçãos, Abordagem de Meomização (Top-Down) e Iterativo (Bottom-Up) 
+# Análise Experimental de Estratégias para o Agoritmo de Distância de Edição, Abordagem de Meomização (Top-Down) e Iterativo (Bottom-Up) 
 ---
 
 ## Resumo  
