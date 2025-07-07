@@ -16,7 +16,7 @@ from recursive import Edit_memoi
 from interativo import Edit_distance_pd
 # Ajuste a profundidade do limite de recursão
 
-sys.setrecursionlimit(20000)
+sys.setrecursionlimit(50000)
 
 
 # --------------------------------------------------------------
@@ -36,7 +36,7 @@ def edit_distance_bottom_up(s1: str, s2: str) -> int:
 # --------------------------------------------------------------
 # 2) Parâmetros do experimento (fiéis ao enunciado)
 # --------------------------------------------------------------
-MIN_N, MAX_N = 10, 800          # intervalo de tamanhos das strings
+MIN_N, MAX_N = 10, 5000          # intervalo de tamanhos das strings
 K_RANGE      = (100, 200)          # nº de tamanhos distintos
 M_RANGE      = (10, 20)            # nº de instâncias por tamanho
 ALPHABET     = string.ascii_lowercase
