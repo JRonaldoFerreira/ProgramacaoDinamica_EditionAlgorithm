@@ -13,8 +13,10 @@ import string
 import time
 import matplotlib.pyplot as plt
 import sys 
-from ProgramacaoDinamica_EditionAlgorithm.recursive import Edit_memoi               # 1) importe sys
+from ProgramacaoDinamica_EditionAlgorithm.recursive import Edit_memoi
 from ProgramacaoDinamica_EditionAlgorithm.interativo import edit_distance_pd
+
+
 # Ajuste a profundidade do limite de recursão
 
 sys.setrecursionlimit(2 * 10_000 + 50)

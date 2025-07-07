@@ -35,3 +35,14 @@ def edit_distance_pd(x, y):
                 R[i][j] = '↑'
 
     return ed[m][n], R
+
+# Dessa Linha em Diante é um teste Simples
+x = "gato"
+y = "rato"
+
+distancia, R = edit_distance_pd(x, y)
+
+print(f"Distância de edição: {distancia}")
+print("Matriz de reconstrução:")
+for linha in R:
+    print(' '.join(linha))
