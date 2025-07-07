@@ -1,4 +1,4 @@
-def edit_distance_pd(x, y):
+def Edit_distance_pd(x, y):
     m, n = len(x), len(y)
 
     # Criação das matrizes
@@ -40,7 +40,7 @@ def edit_distance_pd(x, y):
 x = "gato"
 y = "rato"
 
-distancia, R = edit_distance_pd(x, y)
+distancia, R = Edit_distance_pd(x, y)
 
 print(f"Distância de edição: {distancia}")
 print("Matriz de reconstrução:")
