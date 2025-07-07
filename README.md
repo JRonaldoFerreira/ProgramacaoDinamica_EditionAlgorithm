@@ -35,6 +35,8 @@ Para cada \(n\), calcula-se o **tempo médio** por instância de cada algoritmo;
 
 ![Figura 1 — Tempo médio por instância](./figura1.jpg)
 
+. . .
+
 ![Tabela 1 — Desempenho comparativo dos algoritmos top-down e bottom-up com \(k=181\) e \(m=11\)](./tabela1.jpg)
 
 
